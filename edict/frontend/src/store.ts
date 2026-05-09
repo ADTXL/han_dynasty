@@ -267,6 +267,7 @@ interface AppStore {
   selectedOfficial: string | null;
   modalTaskId: string | null;
   countdown: number;
+  theme: 'dark' | 'light';
 
   // Toast
   toasts: { id: number; msg: string; type: 'ok' | 'err' }[];
@@ -279,6 +280,7 @@ interface AppStore {
   setSelectedOfficial: (id: string | null) => void;
   setModalTaskId: (id: string | null) => void;
   setCountdown: (n: number) => void;
+  setTheme: (theme: 'dark' | 'light') => void;
   toast: (msg: string, type?: 'ok' | 'err') => void;
 
   // Data fetching
@@ -309,6 +311,7 @@ export const useStore = create<AppStore>((set, get) => ({
   selectedOfficial: null,
   modalTaskId: null,
   countdown: 5,
+  theme: (typeof window !== 'undefined' && localStorage.getItem('edict_theme') === 'light') ? 'light' : 'dark',
 
   toasts: [],
 
@@ -326,6 +329,15 @@ export const useStore = create<AppStore>((set, get) => ({
   setSelectedOfficial: (id) => set({ selectedOfficial: id }),
   setModalTaskId: (id) => set({ modalTaskId: id }),
   setCountdown: (n) => set({ countdown: n }),
+  setTheme: (theme) => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('edict_theme', theme);
+    }
+    set({ theme });
+  },
 
   toast: (msg, type = 'ok') => {
     const id = ++_toastId;

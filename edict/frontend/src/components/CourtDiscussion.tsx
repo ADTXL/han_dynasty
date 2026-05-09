@@ -501,8 +501,8 @@ export default function CourtDiscussion() {
       {/* 天命降临面板 */}
       {showDecree && (
         <div
-          className="bg-gradient-to-br from-amber-950/40 to-purple-950/30 rounded-xl p-4 border border-amber-700/30"
-          style={{ animation: 'fadeIn .3s' }}
+          className="rounded-xl p-4 border"
+          style={{ animation: 'fadeIn .3s', background: 'var(--court-panel-bg)', borderColor: 'var(--court-panel-border)' }}
         >
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-bold text-amber-400">⚡ 天命降临 — 上帝视角</span>
@@ -519,7 +519,8 @@ export default function CourtDiscussion() {
               onChange={(e) => setDecreeInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleDecree()}
               placeholder="例如：突然发现预算多出一倍..."
-              className="flex-1 bg-black/30 rounded-lg px-3 py-1.5 text-sm border border-amber-800/40 outline-none focus:border-amber-600"
+              className="flex-1 rounded-lg px-3 py-1.5 text-sm border outline-none"
+              style={{ background: 'var(--panel2)', borderColor: 'var(--court-panel-border)', color: 'var(--text)' }}
             />
             <button
               onClick={handleDecree}
@@ -535,8 +536,8 @@ export default function CourtDiscussion() {
       {/* 命运骰子结果 */}
       {diceResult && (
         <div
-          className="bg-purple-950/40 rounded-lg px-3 py-2 border border-purple-700/30 text-xs text-purple-300 flex items-center gap-2"
-          style={{ animation: 'fadeIn .3s' }}
+          className="rounded-lg px-3 py-2 border text-xs flex items-center gap-2"
+          style={{ animation: 'fadeIn .3s', background: 'color-mix(in srgb, var(--acc2) 12%, var(--panel))', borderColor: 'color-mix(in srgb, var(--acc2) 35%, var(--line))', color: 'var(--text)' }}
         >
           <span className="text-lg">🎲</span>
           {diceResult}
@@ -565,7 +566,7 @@ export default function CourtDiscussion() {
         <div className="bg-[var(--panel)] rounded-xl p-3 border border-[var(--line)] relative overflow-hidden min-h-[320px]">
           {/* 龙椅 */}
           <div className="text-center mb-2">
-            <div className="inline-block px-3 py-1 rounded-lg bg-gradient-to-b from-amber-800/40 to-amber-950/40 border border-amber-700/30">
+            <div className="inline-block px-3 py-1 rounded-lg border" style={{ background: 'var(--court-emperor-bg)', borderColor: 'var(--court-emperor-border)' }}>
               <span className="text-lg">👑</span>
               <div className="text-[10px] text-amber-400/80">龙 椅</div>
             </div>
@@ -710,7 +711,7 @@ function MessageBubble({
 
   if (msg.type === 'scene_note') {
     return (
-      <div className="text-center text-[10px] text-purple-400/80 py-1 italic">
+      <div className="text-center text-[10px] py-1 italic" style={{ color: 'color-mix(in srgb, var(--acc2) 70%, var(--muted))' }}>
         ✦ {msg.content} ✦
       </div>
     );
@@ -719,7 +720,7 @@ function MessageBubble({
   if (msg.type === 'emperor') {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[80%] bg-gradient-to-br from-amber-900/40 to-amber-800/20 rounded-xl px-3 py-2 border border-amber-700/30">
+        <div className="max-w-[80%] rounded-xl px-3 py-2 border" style={{ background: 'var(--court-emperor-bg)', borderColor: 'var(--court-emperor-border)' }}>
           <div className="text-[10px] text-amber-400 mb-0.5">👑 皇帝</div>
           <div className="text-sm">{msg.content}</div>
         </div>
@@ -730,7 +731,7 @@ function MessageBubble({
   if (msg.type === 'decree') {
     return (
       <div className="text-center py-2">
-        <div className="inline-block bg-gradient-to-r from-amber-900/30 via-purple-900/30 to-amber-900/30 rounded-lg px-4 py-2 border border-amber-600/30">
+        <div className="inline-block rounded-lg px-4 py-2 border" style={{ background: 'var(--court-decree-bg)', borderColor: 'var(--court-decree-border)' }}>
           <div className="text-xs text-amber-400 font-bold">⚡ 天命降临</div>
           <div className="text-sm mt-0.5">{msg.content}</div>
         </div>

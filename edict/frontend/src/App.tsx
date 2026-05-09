@@ -21,6 +21,12 @@ export default function App() {
   const liveStatus = useStore((s) => s.liveStatus);
   const countdown = useStore((s) => s.countdown);
   const loadAll = useStore((s) => s.loadAll);
+  const theme = useStore((s) => s.theme);
+  const setTheme = useStore((s) => s.setTheme);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     startPolling();
@@ -59,6 +65,13 @@ export default function App() {
             {syncOk ? '✅ 同步正常' : syncOk === false ? '❌ 服务器未启动' : '⏳ 连接中…'}
           </span>
           <span className="chip">{activeEdicts.length} 道旨意</span>
+          <button
+            className="btn-theme"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            title={theme === 'dark' ? '切换到明亮模式' : '切换到暗黑模式'}
+          >
+            {theme === 'dark' ? '☀️ 明亮' : '🌙 暗黑'}
+          </button>
           <button className="btn-refresh" onClick={() => loadAll()}>
             ⟳ 刷新
           </button>
