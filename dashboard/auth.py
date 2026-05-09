@@ -147,6 +147,7 @@ def extract_token(headers) -> str | None:
 # 不需要认证的路径白名单
 _PUBLIC_PATHS = frozenset({
     '/healthz',
+    '/login',
     '/api/auth/login',
     '/api/auth/setup',
     '/api/auth/status',
@@ -166,7 +167,5 @@ def requires_auth(path: str) -> bool:
     for prefix in _PUBLIC_PREFIXES:
         if path.startswith(prefix):
             return False
-    # dashboard 首页不拦截（前端自己处理重定向到登录）
-    if path in ('', '/', '/dashboard', '/dashboard.html'):
-        return False
+    # 首页和 SPA 主路由也要求登录，由服务端统一重定向到 /login
     return True

@@ -2390,21 +2390,37 @@ class Handler(BaseHTTPRequestHandler):
         return False
 
     def _check_auth(self):
-        """检查认证，未通过返回 True（已发送 401 响应）。"""
+        """检查认证，未通过返回 True（已发送响应）。API 返回 401；页面路由跳转到 /login。"""
         p = urlparse(self.path).path.rstrip('/')
         if not requires_auth(p):
             return False
         token = extract_token(self.headers)
-        if not token or not verify_token(token):
+        if token and verify_token(token):
+            return False
+        if p.startswith('/api/'):
             self.send_json({'ok': False, 'error': '未登录或会话已过期'}, 401)
             return True
-        return False
+        self.send_response(302)
+        self.send_header('Location', '/login')
+        cors_headers(self)
+        self.end_headers()
+        return True
 
     def do_GET(self):
         p = urlparse(self.path).path.rstrip('/')
         # 认证状态端点（公开）
         if p == '/api/auth/status':
             self.send_json({'enabled': auth_enabled(), 'configured': auth_configured()})
+            return
+        if p == '/login':
+            token = extract_token(self.headers)
+            if token and verify_token(token):
+                self.send_response(302)
+                self.send_header('Location', '/')
+                cors_headers(self)
+                self.end_headers()
+                return
+            self.send_file(BASE / 'login.html')
             return
         if self._check_auth():
             return

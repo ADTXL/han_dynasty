@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>三省六部 · 登录</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121933;
+      --panel2: #1b2447;
+      --line: #2b3769;
+      --text: #eef3ff;
+      --muted: #9aa7d6;
+      --acc: #7aa2ff;
+      --danger: #ff6b81;
+      --ok: #45d483;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #16214a 0%, var(--bg) 48%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Noto Sans CJK SC", sans-serif;
+    }
+    .card {
+      width: min(92vw, 420px);
+      background: linear-gradient(180deg, rgba(26,37,77,.95), rgba(16,22,47,.98));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.45);
+    }
+    .title { font-size: 28px; font-weight: 800; margin: 0 0 8px; }
+    .sub { color: var(--muted); font-size: 14px; margin-bottom: 22px; line-height: 1.6; }
+    .label { font-size: 13px; color: var(--muted); margin-bottom: 8px; display: block; }
+    .input {
+      width: 100%; padding: 13px 14px; border-radius: 12px; outline: none;
+      border: 1px solid var(--line); background: var(--panel2); color: var(--text); font-size: 15px;
+    }
+    .input:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(122,162,255,.18); }
+    .btn {
+      width: 100%; margin-top: 16px; padding: 13px 14px; border: 0; border-radius: 12px;
+      background: linear-gradient(90deg, #6f95ff, #8e7bff); color: white; font-size: 15px; font-weight: 700;
+      cursor: pointer;
+    }
+    .btn[disabled] { opacity: .7; cursor: not-allowed; }
+    .msg { min-height: 22px; margin-top: 12px; font-size: 13px; }
+    .err { color: var(--danger); }
+    .ok { color: var(--ok); }
+    .foot { margin-top: 18px; font-size: 12px; color: var(--muted); }
+    .kbd { display:inline-block; padding: 2px 6px; border:1px solid var(--line); border-radius: 6px; background: rgba(255,255,255,.03); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 class="title">三省六部 · 登录</h1>
+    <div class="sub">军机处看板已启用访问控制。请输入密码后进入看板。</div>
+    <form id="form">
+      <label class="label" for="password">访问密码</label>
+      <input id="password" class="input" type="password" autocomplete="current-password" placeholder="请输入访问密码" required />
+      <button id="submit" class="btn" type="submit">进入看板</button>
+      <div id="msg" class="msg"></div>
+    </form>
+    <div class="foot">登录成功后会保存当前会话。若失效，重新输入密码即可。</div>
+  </div>
+  <script>
+    const form = document.getElementById('form');
+    const password = document.getElementById('password');
+    const submit = document.getElementById('submit');
+    const msg = document.getElementById('msg');
+
+    async function checkStatus() {
+      try {
+        const r = await fetch('/api/auth/status', { cache: 'no-store' });
+        const d = await r.json();
+        if (!d.enabled) {
+          location.replace('/');
+          return;
+        }
+      } catch (_) {}
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.textContent = '';
+      msg.className = 'msg';
+      submit.disabled = true;
+      submit.textContent = '登录中…';
+      try {
+        const r = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: password.value })
+        });
+        const d = await r.json().catch(() => ({}));
+        if (r.ok && d.ok) {
+          msg.textContent = '登录成功，正在进入看板…';
+          msg.className = 'msg ok';
+          setTimeout(() => location.replace('/'), 250);
+        } else {
+          msg.textContent = d.error || '登录失败';
+          msg.className = 'msg err';
+        }
+      } catch (err) {
+        msg.textContent = '服务器连接失败，请稍后重试';
+        msg.className = 'msg err';
+      } finally {
+        submit.disabled = false;
+        submit.textContent = '进入看板';
+      }
+    });
+
+    checkStatus();
+    password.focus();
+  </script>
+</body>
+</html>
